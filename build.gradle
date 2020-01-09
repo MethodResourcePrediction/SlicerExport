@@ -20,8 +20,12 @@ repositories {
 dependencies {
 	compile files('../Utils.jar')
 	
-	// https://mvnrepository.com/artifact/com.ibm.wala/com.ibm.wala.core
-	compile group: 'com.ibm.wala', name: 'com.ibm.wala.core', version: '1.5.4'
+	compile files(
+		'../WALA/com.ibm.wala.shrike-1.5.5-SNAPSHOT.jar',
+	)
+	
+	// https://mvnrepository.com/artifact/com.ibm.wala/com.ibm.wala.shrike
+	//compile group: 'com.ibm.wala', name: 'com.ibm.wala.shrike', version: '1.5.5'
     
 	// https://mvnrepository.com/artifact/org.apache.directory.studio/org.apache.commons.io
 	compile group: 'org.apache.directory.studio', name: 'org.apache.commons.io', version: '2.4'
