@@ -24,6 +24,10 @@ import org.xml.sax.SAXException;
 public class SliceWriter {
 	public static final String XML_NAMESPACE = "http://rherzog.de/thesis/master/Slicer";
 
+	public enum ExportFormat {
+		CSV, XML
+	}
+
 	public static void writeCSV(String filePath, long timeStart, long timeEnd, FeatureLogger featureLogger)
 			throws IOException {
 		System.out.println("Write");
