@@ -1,12 +1,14 @@
 package de.rherzog.master.thesis.slicer.instrumenter.export;
 
+import java.util.List;
+
 public class Feature {
 	private int instructionIndex;
-	private Object value;
+	private List<Double> values;
 
-	public Feature(int instructionIndex, Object value) {
+	public Feature(int instructionIndex, List<Double> values) {
 		this.setInstructionIndex(instructionIndex);
-		this.setValue(value);
+		this.setValues(values);
 	}
 
 	public int getInstructionIndex() {
@@ -17,20 +19,20 @@ public class Feature {
 		this.instructionIndex = instructionIndex;
 	}
 
-	public Object getValue() {
-		return value;
+	public List<Double> getValues() {
+		return values;
 	}
 
-	public void setValue(Object value) {
-		this.value = value;
+	public void setValues(List<Double> values) {
+		this.values = values;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Feature [");
 		builder.append("instructionIndex: ").append(getInstructionIndex()).append(", ");
-		builder.append("value: ").append(getValue()).append("]");
+		builder.append("values: ").append(getValues().toString()).append("]");
 		return builder.toString();
 	}
 }

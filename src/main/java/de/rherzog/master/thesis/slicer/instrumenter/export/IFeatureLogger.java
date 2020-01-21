@@ -9,5 +9,5 @@ public interface IFeatureLogger {
 
 	public List<Feature> getFeatures();
 
-	Double getFeatureValue(int instructionIndex);
+	List<Double> getFeatureValueList(int instructionIndex);
 }

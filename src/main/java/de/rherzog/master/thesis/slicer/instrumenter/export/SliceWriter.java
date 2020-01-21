@@ -38,7 +38,7 @@ public class SliceWriter {
 		Encoder encoder = Base64.getEncoder();
 		StringBuilder builder = new StringBuilder();
 
-		final String[] columns = new String[] { "instruction_index", "value" };
+		final String[] columns = new String[] { "instruction_index", "values" };
 		// CSV header
 		builder.append(String.join(",", columns)).append("\n");
 
@@ -48,12 +48,13 @@ public class SliceWriter {
 			builder.append(encoder.encodeToString(instructionIndexStr.getBytes())).append(",");
 
 			// value
-			String valueStr = String.valueOf(featureValue.getValue());
-			builder.append(encoder.encodeToString(valueStr.getBytes()));
+			String valuesStr = String.valueOf(featureValue.getValues());
+			builder.append(encoder.encodeToString(valuesStr.getBytes()));
 
 			builder.append("\n");
 		}
 		IOUtils.write(builder.toString(), outputStream);
+		outputStream.close();
 	}
 
 	public static void writeXML(String filePath, long timeStart, long timeEnd, FeatureLogger featureLogger)
@@ -109,9 +110,12 @@ public class SliceWriter {
 			String instructionIndexStr = String.valueOf(feature.getInstructionIndex());
 			featureElement.addAttribute("instructionIndex", instructionIndexStr);
 
-			// value
-			String valueStr = String.valueOf(feature.getValue());
-			featureElement.addAttribute("value", valueStr);
+			Element valuesElement = featureElement.addElement(namespace.getPrefix() + ":Values");
+			for (Object value : feature.getValues()) {
+				Element valueElement = valuesElement.addElement(namespace.getPrefix() + ":Value");
+
+				valueElement.setText(String.valueOf(value));
+			}
 		}
 	}
 }
