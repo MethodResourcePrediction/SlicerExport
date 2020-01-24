@@ -28,8 +28,7 @@ public class SliceWriter {
 		CSV, XML
 	}
 
-	public static void writeCSV(String filePath, long timeStart, long timeEnd, FeatureLogger featureLogger)
-			throws IOException {
+	public static void writeCSV(String filePath, FeatureLogger featureLogger) throws IOException {
 		System.out.println("Write");
 
 		File file = new File(filePath);
@@ -38,27 +37,35 @@ public class SliceWriter {
 		Encoder encoder = Base64.getEncoder();
 		StringBuilder builder = new StringBuilder();
 
-		final String[] columns = new String[] { "instruction_index", "values" };
+		final String[] columns = new String[] { "execution_count", "instruction_index", "value" };
 		// CSV header
 		builder.append(String.join(",", columns)).append("\n");
 
-		for (Feature featureValue : featureLogger.getFeatures()) {
-			// instruction_index
-			String instructionIndexStr = String.valueOf(featureValue.getInstructionIndex());
-			builder.append(encoder.encodeToString(instructionIndexStr.getBytes())).append(",");
+		for (FeatureLoggerExecution execution : featureLogger.getExecutions()) {
+			for (Feature feature : execution.getFeatures()) {
+				int instructionIndex = feature.getInstructionIndex();
+				int executionCount = execution.getExecutionCount();
 
-			// value
-			String valuesStr = String.valueOf(featureValue.getValues());
-			builder.append(encoder.encodeToString(valuesStr.getBytes()));
+				// execution_count
+				builder.append(encoder.encodeToString(String.valueOf(executionCount).getBytes())).append(",");
 
-			builder.append("\n");
+				// instruction_index
+				String instructionIndexStr = String.valueOf(instructionIndex);
+				builder.append(encoder.encodeToString(instructionIndexStr.getBytes())).append(",");
+
+				// value
+				String valuesStr = String.valueOf(feature.getValue());
+				builder.append(encoder.encodeToString(valuesStr.getBytes()));
+
+				builder.append("\n");
+			}
 		}
+
 		IOUtils.write(builder.toString(), outputStream);
 		outputStream.close();
 	}
 
-	public static void writeXML(String filePath, long timeStart, long timeEnd, FeatureLogger featureLogger)
-			throws IOException {
+	public static void writeXML(String filePath, FeatureLogger featureLogger) throws IOException {
 		System.out.println("Write");
 
 		Namespace namespace = Namespace.get("app", XML_NAMESPACE);
@@ -66,12 +73,11 @@ public class SliceWriter {
 
 		// Create default document structure elements
 		Element slicerElement = document.addElement(namespace.getPrefix() + ":Slicer");
-		slicerElement.addAttribute("startMillis", String.valueOf(timeStart));
-		slicerElement.addAttribute("endMillis", String.valueOf(timeEnd));
-		slicerElement.addAttribute("durationMillis", String.valueOf(timeEnd - timeStart));
 		slicerElement.add(namespace);
 
-		exportFeatures(namespace, slicerElement, featureLogger.getFeatures());
+		long duration = exportExecutions(namespace, slicerElement, featureLogger.getExecutions());
+
+		slicerElement.addAttribute("durationMS", String.valueOf(duration));
 
 		// Write XML DOM to file
 		File xmlFile = null;
@@ -100,22 +106,43 @@ public class SliceWriter {
 		}
 	}
 
+	private static long exportExecutions(Namespace namespace, Element root, List<FeatureLoggerExecution> executions) {
+		Long duration = null;
+
+		Element executionsElement = root.addElement(namespace.getPrefix() + ":Executions");
+		for (FeatureLoggerExecution execution : executions) {
+			Element executionElement = executionsElement.addElement(namespace.getPrefix() + ":Execution");
+			executionElement.addAttribute("executionCount", String.valueOf(execution.getExecutionCount()));
+			executionElement.addAttribute("startMS", String.valueOf(execution.getTimeStart()));
+			executionElement.addAttribute("endMS", String.valueOf(execution.getTimeEnd()));
+
+			long durationMs = execution.getTimeEnd() - execution.getTimeStart();
+			if (duration == null) {
+				duration = durationMs;
+			}
+
+			executionElement.addAttribute("durationMS", String.valueOf(durationMs));
+
+			exportFeatures(namespace, executionElement, execution.getFeatures());
+		}
+		if (duration == null) {
+			duration = 0L;
+		}
+		return duration;
+	}
+
 	private static void exportFeatures(Namespace namespace, Element root, List<Feature> features) {
 		Element featuresElement = root.addElement(namespace.getPrefix() + ":Features");
 
 		for (Feature feature : features) {
+			int instructionIndex = feature.getInstructionIndex();
+			Double value = feature.getValue();
+
 			Element featureElement = featuresElement.addElement(namespace.getPrefix() + ":Feature");
 
-			// instruction_index
-			String instructionIndexStr = String.valueOf(feature.getInstructionIndex());
-			featureElement.addAttribute("instructionIndex", instructionIndexStr);
-
-			Element valuesElement = featureElement.addElement(namespace.getPrefix() + ":Values");
-			for (Object value : feature.getValues()) {
-				Element valueElement = valuesElement.addElement(namespace.getPrefix() + ":Value");
-
-				valueElement.setText(String.valueOf(value));
-			}
+			featureElement.addAttribute("instructionIndex", String.valueOf(instructionIndex));
+			Element valueElement = featureElement.addElement(namespace.getPrefix() + ":Value");
+			valueElement.setText(String.valueOf(value));
 		}
 	}
 }

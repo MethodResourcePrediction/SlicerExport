@@ -1,12 +1,12 @@
 package de.rherzog.master.thesis.slicer.instrumenter.export.test;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.rherzog.master.thesis.slicer.instrumenter.export.FeatureLogger;
+import de.rherzog.master.thesis.slicer.instrumenter.export.FeatureLoggerExecution;
 import de.rherzog.master.thesis.slicer.instrumenter.export.SliceWriter;
 
 public class FeatureValueWriterTest {
@@ -17,12 +17,17 @@ public class FeatureValueWriterTest {
 		featureLogger.reset();
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = UnsupportedOperationException.class)
 	public void testMissingFeature() throws IOException {
 		setup();
 
 		featureLogger.initializeFeature(1);
-		featureLogger.log(2, 1337);
+		FeatureLoggerExecution execution = featureLogger.createExecution();
+
+		execution.log(2, 1337);
+
+		Assert.assertEquals(1, execution.getFeatures().size());
+		Assert.assertEquals(1337d, execution.getFeatureValue(2), 0d);
 	}
 
 	@Test
@@ -32,60 +37,38 @@ public class FeatureValueWriterTest {
 		featureLogger.initializeFeature(1);
 		featureLogger.initializeFeature(2);
 
-		featureLogger.log(1, 42);
-		featureLogger.log(2, 1337);
+		FeatureLoggerExecution execution = featureLogger.createExecution();
 
-		SliceWriter.writeCSV("result.csv", 111, 113, featureLogger);
-		SliceWriter.writeXML("result.xml", 111, 112, featureLogger);
+		execution.log(1, 42);
+		execution.log(2, 1337);
+
+		Assert.assertEquals(2, execution.getFeatures().size());
+		Assert.assertEquals(42d, execution.getFeatureValue(1), 0d);
+		Assert.assertEquals(1337d, execution.getFeatureValue(2), 0d);
+
+		execution.end(133, 155);
+
+		SliceWriter.writeCSV("result.csv", featureLogger);
+		SliceWriter.writeXML("result.xml", featureLogger);
 	}
 
-	@Test
+	@Test(expected = UnsupportedOperationException.class)
 	public void testMultipleInitializations() throws IOException {
 		setup();
 
 		featureLogger.initializeFeature(1);
 		featureLogger.initializeFeature(2);
 		featureLogger.initializeFeature(1);
-
-		featureLogger.log(1, 42);
-		featureLogger.log(2, 1337);
 	}
 
 	@Test
-	public void testIncrementBy() throws IOException {
+	public void testExecutions() throws IOException {
 		setup();
 
-		featureLogger.initializeFeature(1);
+		FeatureLoggerExecution execution1 = featureLogger.createExecution();
+		FeatureLoggerExecution execution2 = featureLogger.createExecution();
 
-		featureLogger.log(1, 42);
-		featureLogger.incrementLastBy(1, 4);
-		featureLogger.incrementLastBy(1, 5);
-
-		List<Double> featureValueList = featureLogger.getFeatureValueList(1);
-		Assert.assertEquals(1, featureValueList.size());
-		Assert.assertEquals(51d, featureValueList.get(0), 0);
-	}
-
-	@Test
-	public void testIncrementByWithDefault() throws IOException {
-		setup();
-
-		featureLogger.initializeFeature(1);
-		featureLogger.initializeFeature(2);
-
-		featureLogger.log(1, 0);
-		featureLogger.log(2, 15);
-		featureLogger.incrementLastBy(1, 4);
-		featureLogger.incrementLastBy(1, 5);
-
-		List<Double> featureValueList = featureLogger.getFeatureValueList(1);
-		Assert.assertEquals(1, featureValueList.size());
-		Assert.assertEquals(9d, featureValueList.get(0), 0);
-
-		featureValueList = featureLogger.getFeatureValueList(2);
-		Assert.assertEquals(1, featureValueList.size());
-		Assert.assertEquals(15d, featureValueList.get(0), 0);
-
-		SliceWriter.writeXML("result.xml", 111, 113, featureLogger);
+		Assert.assertEquals(0, execution1.getExecutionCount());
+		Assert.assertEquals(1, execution2.getExecutionCount());
 	}
 }

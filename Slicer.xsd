@@ -5,11 +5,9 @@
 
     <complexType name="Slicer">
     	<sequence>
-    		<element name="Features" type="tns:Features"></element>
+    		<element name="Executions" type="tns:Executions"></element>
     	</sequence>
-    	<attribute name="startMillis" type="long"></attribute>
-    	<attribute name="endMillis" type="long"></attribute>
-    	<attribute name="durationMillis" type="long"></attribute>
+    	<attribute name="durationMS" type="long"></attribute>
     </complexType>
 
     <complexType name="Features">
@@ -20,7 +18,7 @@
     
     <complexType name="Feature">
     	<sequence>
-    		<element name="Values" type="tns:FeatureValues"></element>
+    		<element name="Value" type="string"></element>
     	</sequence>
     	<attribute name="instructionIndex" type="int"></attribute>
     </complexType>
@@ -29,5 +27,21 @@
     	<sequence>
     		<element name="Value" type="string" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
+    </complexType>
+
+    <complexType name="Executions">
+    	<sequence>
+    		<element name="Execution" type="tns:Execution" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="Execution">
+    	<sequence>
+    		<element name="Features" type="tns:Features"></element>
+    	</sequence>
+    	<attribute name="executionCount" type="int"></attribute>
+    	<attribute name="startMS" type="long"></attribute>
+    	<attribute name="endMS" type="long"></attribute>
+    	<attribute name="durationMS" type="long"></attribute>
     </complexType>
 </schema>
