@@ -1,11 +1,11 @@
 package de.rherzog.master.thesis.slicer.instrumenter.export;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import de.rherzog.master.thesis.utils.Utilities;
 
@@ -42,8 +42,11 @@ public class FeatureLoggerExecution implements IFeatureLoggerExecution {
 
 	@Override
 	public List<Feature> getFeatures() {
-		List<Feature> featureList = featureValueMap.entrySet().stream().map(e -> new Feature(e.getKey(), e.getValue()))
-				.collect(Collectors.toList());
+		List<Feature> featureList = new ArrayList<>();
+		for (Integer featureInstructionIndex : featureSet) {
+			Double featureValue = featureValueMap.get(featureInstructionIndex);
+			featureList.add(new Feature(featureInstructionIndex, featureValue));
+		}
 		return featureList;
 	}
 

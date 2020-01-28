@@ -53,4 +53,13 @@ public class FeatureLogger implements IFeatureLogger {
 		executionCount = 0;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(FeatureLogger.class.getSimpleName() + " [");
+		builder.append("Executions: " + getExecutions().size());
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

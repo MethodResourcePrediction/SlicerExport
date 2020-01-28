@@ -22,6 +22,7 @@ import org.dom4j.io.XMLWriter;
 import org.xml.sax.SAXException;
 
 public class SliceWriter {
+	public static final String SLICER_XSD_PATH = "Slicer.xsd";
 	public static final String XML_NAMESPACE = "http://rherzog.de/thesis/master/Slicer";
 
 	public enum ExportFormat {
@@ -97,7 +98,7 @@ public class SliceWriter {
 
 		// Read the previously written XML file and validate it against the XSD
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		File xsdFile = new File("Slicer.xsd");
+		File xsdFile = new File(SLICER_XSD_PATH);
 		try {
 			factory.newSchema(xsdFile).newValidator().validate(new StreamSource(xmlFile));
 		} catch (SAXException | IOException e) {
