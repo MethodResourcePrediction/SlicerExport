@@ -1,12 +1,17 @@
 package de.rherzog.master.thesis.slicer.instrumenter.export;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import de.rherzog.master.thesis.utils.Utilities;
 
 public class FeatureLogger implements IFeatureLogger {
 	private static FeatureLogger featureLogger;
+	private Map<Integer, Double> featureDefaultValueMap;
 
 	private Set<Integer> featureSet;
 	private List<FeatureLoggerExecution> executions;
@@ -15,6 +20,7 @@ public class FeatureLogger implements IFeatureLogger {
 	private FeatureLogger() {
 		featureSet = new HashSet<>();
 		executions = new ArrayList<>();
+		featureDefaultValueMap = new HashMap<>();
 	}
 
 	public static FeatureLogger getInstance() {
@@ -36,8 +42,23 @@ public class FeatureLogger implements IFeatureLogger {
 		featureSet.add(index);
 	}
 
+	public void setFeatureDefaultValue(int index, Object value) {
+		setFeatureDefaultValue(index, value, true);
+	}
+
+	public void setFeatureDefaultValue(int index, Object value, boolean doThrow) {
+		if (doThrow && featureDefaultValueMap.containsKey(index)) {
+			throw new UnsupportedOperationException(
+					"Feature deafult value with index " + index + " was already initialized");
+		}
+
+		Double d = Utilities.convertNumericObjectToDouble(value);
+		featureDefaultValueMap.put(index, d);
+	}
+
 	public FeatureLoggerExecution createExecution() {
-		FeatureLoggerExecution execution = new FeatureLoggerExecution(executionCount++, featureSet);
+		FeatureLoggerExecution execution = new FeatureLoggerExecution(executionCount++, featureSet,
+				featureDefaultValueMap);
 		executions.add(execution);
 		return execution;
 	}

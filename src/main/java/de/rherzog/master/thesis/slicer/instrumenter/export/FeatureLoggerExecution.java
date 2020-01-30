@@ -14,11 +14,14 @@ public class FeatureLoggerExecution implements IFeatureLoggerExecution {
 	private Set<Integer> featureSet;
 	private Map<Integer, Double> featureValueMap;
 	private long timeEnd, timeStart;
+	private Map<Integer, Double> featureDefaultValueMap;
 
-	public FeatureLoggerExecution(int executionCount, Set<Integer> featureSet) {
+	public FeatureLoggerExecution(int executionCount, Set<Integer> featureSet,
+			Map<Integer, Double> featureDefaultValueMap) {
 		this.executionCount = executionCount;
 		this.featureSet = new HashSet<>(featureSet);
 		this.featureValueMap = new HashMap<>();
+		this.featureDefaultValueMap = new HashMap<>(featureDefaultValueMap);
 	}
 
 	@Override
@@ -43,9 +46,12 @@ public class FeatureLoggerExecution implements IFeatureLoggerExecution {
 	@Override
 	public List<Feature> getFeatures() {
 		List<Feature> featureList = new ArrayList<>();
-		for (Integer featureInstructionIndex : featureSet) {
-			Double featureValue = featureValueMap.get(featureInstructionIndex);
-			featureList.add(new Feature(featureInstructionIndex, featureValue));
+		for (Integer instructionIndex : featureSet) {
+			Double featureValue = featureValueMap.get(instructionIndex);
+			if (featureValue == null && featureDefaultValueMap.containsKey(instructionIndex)) {
+				featureValue = featureDefaultValueMap.get(instructionIndex);
+			}
+			featureList.add(new Feature(instructionIndex, featureValue));
 		}
 		return featureList;
 	}
