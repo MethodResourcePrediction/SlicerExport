@@ -68,6 +68,11 @@ public class FeatureLogger implements IFeatureLogger {
 		return executions;
 	}
 
+	public FeatureLoggerExecution getLastExecution() {
+		int size = executions.size();
+		return executions.get(size - 1);
+	}
+
 	public void reset() {
 		featureSet.clear();
 		executions.clear();
