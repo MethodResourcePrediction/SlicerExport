@@ -18,10 +18,12 @@ repositories {
 }
 
 dependencies {
-	compile files('../Utils.jar')
+	compile files(
+		'../Utils/build/libs/Utils.jar',
+	)
 	
 	compile files(
-		'../WALA/com.ibm.wala.shrike-1.5.6-SNAPSHOT.jar',
+		'../WALA/com.ibm.wala.shrike/build/libs/com.ibm.wala.shrike-1.5.6-SNAPSHOT.jar',
 	)
 	
 	// https://mvnrepository.com/artifact/com.ibm.wala/com.ibm.wala.shrike
