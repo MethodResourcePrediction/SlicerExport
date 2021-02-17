@@ -1,4 +1,4 @@
-package de.rherzog.master.thesis.slicer.instrumenter.export;
+package de.uniks.vs.methodresourceprediction.slicer.export;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.rherzog.master.thesis.utils.Utilities;
+import de.uniks.vs.methodresourceprediction.utils.Utilities;
 
 public class FeatureLogger implements IFeatureLogger {
 	private static FeatureLogger featureLogger;

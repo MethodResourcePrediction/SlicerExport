@@ -1,4 +1,4 @@
-package de.rherzog.master.thesis.slicer.instrumenter.export;
+package de.uniks.vs.methodresourceprediction.slicer.export;
 
 import java.util.List;
 

@@ -1,13 +1,13 @@
-package de.rherzog.master.thesis.slicer.instrumenter.export.test;
+package de.uniks.vs.methodresourceprediction.slicer.export.test;
 
 import java.io.IOException;
 
+import de.uniks.vs.methodresourceprediction.slicer.export.SliceWriter;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.rherzog.master.thesis.slicer.instrumenter.export.FeatureLogger;
-import de.rherzog.master.thesis.slicer.instrumenter.export.FeatureLoggerExecution;
-import de.rherzog.master.thesis.slicer.instrumenter.export.SliceWriter;
+import de.uniks.vs.methodresourceprediction.slicer.export.FeatureLogger;
+import de.uniks.vs.methodresourceprediction.slicer.export.FeatureLoggerExecution;
 
 public class FeatureValueWriterTest {
 	private FeatureLogger featureLogger;
