@@ -6,8 +6,6 @@ build
 
 bin/
 *.log
-*.jar
 *.class
 *.csv
 *.xml
-bin/

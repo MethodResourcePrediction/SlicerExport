@@ -1,23 +1,18 @@
 buildscript {
     dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
     }
 }
 
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
-    id 'maven'
+    id 'maven-publish'
     id 'signing'
 }
 
-apply plugin: 'com.bmuschko.nexus'
-
 repositories {
     jcenter()
-    maven() {
-        url = 'https://srv202.parsens.uni-kassel.de/repository/maven-snapshots/'
-    }
+    mavenCentral()
 }
 
 group = "de.uniks.vs.methodresourceprediction"
@@ -30,75 +25,18 @@ configurations {
 }
 
 dependencies {
-    compile group: 'de.uniks.vs.methodresourceprediction', name: 'utils', version: '1.0.0-SNAPSHOT'
+    implementation files('libs/utils-1.0.0-SNAPSHOT.jar')
 
-    compile group: 'com.ibm.wala', name: 'shrike', version: '1.5.7-SNAPSHOT'
-    
-	// https://mvnrepository.com/artifact/org.apache.directory.studio/org.apache.commons.io
-	compile group: 'org.apache.directory.studio', name: 'org.apache.commons.io', version: '2.4'
-	
-	// https://mvnrepository.com/artifact/org.dom4j/dom4j
-	compile group: 'org.dom4j', name: 'dom4j', version: '2.1.1'
+    implementation group: 'com.ibm.wala', name: 'com.ibm.wala.shrike', version: '1.5.8'
+
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
+    // https://mvnrepository.com/artifact/org.dom4j/dom4j
+    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.1'
 
     // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "${nexusUrl}/repository/maven-releases/") {
-                authentication(userName: nexusUsername, password: nexusPassword)
-            }
-
-            snapshotRepository(url: "${nexusUrl}/repository/maven-snapshots/") {
-                authentication(userName: nexusUsername, password: nexusPassword)
-            }
-
-            pom.project {
-                name 'MethodResourcePrediction - SlicerExport'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'SlicerExport used to provide runtime bytecode'
-                url 'https://github.com/RalfHerzog'
-
-                scm {
-                    connection 'git@github.com:MethodResourcePrediction/Utils.git'
-                    developerConnection 'git@github.com:MethodResourcePrediction/Utils.git'
-                    url 'https://github.com/MethodResourcePrediction/Utils'
-                }
-
-                licenses {
-                    license {
-                        name 'MIT License'
-                        url 'https://opensource.org/licenses/MIT'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id 'ralfherzog'
-                        name 'Ralf Herzog'
-                        email 'ralf@rherzog.de'
-                    }
-                }
-            }
-        }
-    }
-}
-
-extraArchive {
-    sources = true
-    tests = true
-    javadoc = false
-}
-
-nexus {
-    sign = false
-    repositoryUrl = "${nexusUrl}/repository/maven-releases/"
-    snapshotRepositoryUrl = "${nexusUrl}/repository/maven-snapshots/"
+    testImplementation 'junit:junit:4.13.2'
 }
 
 jar {
